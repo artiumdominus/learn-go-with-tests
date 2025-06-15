@@ -1,6 +1,7 @@
 package poker_test
 
 import (
+	"io"
 	"testing"
 	"strings"
 	"whatever/m/poker"
@@ -88,14 +89,19 @@ func assertGameNotStarted(t testing.TB, game *GameSpy) {
 }
 
 type GameSpy struct {
+	StartCalled  bool
 	StartedWith  int
+
+	FinishCalled bool
 	FinishedWith string
-	StartCalled bool
+
+	BlindAlert   []byte
 }
 
-func (g *GameSpy) Start(numberOfPlayers int) {
-	g.StartedWith = numberOfPlayers
+func (g *GameSpy) Start(numberOfPlayers int, out io.Writer) {
 	g.StartCalled = true
+	g.StartedWith = numberOfPlayers
+	out.Write(g.BlindAlert)
 }
 
 func (g *GameSpy) Finish(winner string) {
